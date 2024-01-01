@@ -13,13 +13,15 @@ int main(int argc, char** argv) {
 	vhash_map_insert(&map, type, "Fred", &b);
 	vhash_map_insert(&map, type, "Amy", &c);
 
-	void* res = vhash_map_find(&map, type, "Jack");
-	int p = 0;
-	if (res != NULL) {
-		p = *(int*)res;
-	}
+	vhash_map_erase(&map, type, "Amy");
 
-	printf("Found: %d\n", p);
+	char* key = "Amy";
+	void* result = vhash_map_find(&map, type, key);
+	if (result == NULL) {
+		printf("Key: '%s' was not found in map!\n", key);
+	} else {
+		printf("'%s' -> '%d'\n", key, *(int*)result);
+	}
 
 	vhash_map_debug_print(&map);
 	return getchar();
