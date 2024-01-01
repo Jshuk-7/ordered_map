@@ -80,6 +80,7 @@ bool vhash_map_insert(HashMap* this, KeyType type, const void* key, void* value)
 		case KEY_TYPE_F32: return vhash_map_insert_f(this, (*(const float*)key), value);
 		case KEY_TYPE_CHAR: return vhash_map_insert_c(this, (*(const char*)key), value);
 		case KEY_TYPE_STR: return vhash_map_insert_str(this, (const char*)key, value);
+		case KEY_TYPE_PTR: return vhash_map_insert_ptr(this, (const void*)key, value);
 	}
 
 	VHASH_MAP_ASSERT(false, "unknown key type!");
@@ -201,7 +202,7 @@ void* vhash_map_erase(HashMap* this, KeyType type, const void* key) {
 		case KEY_TYPE_F32: return vhash_map_erase_f(this, (*(const float*)key));
 		case KEY_TYPE_CHAR: return vhash_map_erase_c(this, (*(const char*)key));
 		case KEY_TYPE_STR: return vhash_map_erase_str(this, (const char*)key);
-		case KEY_TYPE_PTR: return vhash_map_erase_ptr(this, (void*)key);
+		case KEY_TYPE_PTR: return vhash_map_erase_ptr(this, (const void*)key);
 	}
 
 	VHASH_MAP_ASSERT(false, "unknown key type!");
@@ -298,6 +299,7 @@ void* vhash_map_find(const HashMap* this, KeyType type, const void* key) {
 		case KEY_TYPE_F32: return vhash_map_find_f(this, (*(const float*)key));
 		case KEY_TYPE_CHAR: return vhash_map_find_c(this, (*(const char*)key));
 		case KEY_TYPE_STR: return vhash_map_find_str(this, (const char*)key);
+		case KEY_TYPE_PTR: return vhash_map_find_ptr(this, (const void*)key);
 	}
 
 	VHASH_MAP_ASSERT(false, "unknown key type!");
@@ -393,20 +395,19 @@ uint64_t vhash_c(const char value) {
 
 uint64_t vhash_str(const char* value) {
 	const size_t length = strlen(value);
-	uint32_t hash = 0;
+	uint64_t hash = 0;
 	for (int i = 0; i < length; i++) {
-		const int rounds = 1;
-		for (int j = 0; j < rounds; j++) {
-			char c = value[i];
-			hash = hash + c;
-			hash = (hash * c) % VHASH_MAP_CAPACITY;
-		}
+		char c = value[i];
+		hash = hash + c;
+		hash = (hash * c) % VHASH_MAP_CAPACITY;
 	}
 	return hash;
 }
 
 uint64_t vhash_ptr(const void* value) {
-	return 5;
+	const uint64_t address = (uint64_t)value;
+	const uint64_t hash = address % VHASH_MAP_CAPACITY;
+	return hash;
 }
 
 #endif
