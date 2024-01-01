@@ -95,7 +95,7 @@ bool vhash_map_insert_i(HashMap* this, const int key, void* value) {
 	const uint64_t hash = vhash_i(key);
 
 	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
-		const int attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
 		if (this->data[attempt] == NULL) {
 			// free space
 			this->data[attempt] = value;
@@ -116,7 +116,7 @@ bool vhash_map_insert_f(HashMap* this, const float key, void* value) {
 	const uint64_t hash = vhash_f(key);
 
 	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
-		const int attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
 		if (this->data[attempt] == NULL) {
 			// free space
 			this->data[attempt] = value;
@@ -137,7 +137,7 @@ bool vhash_map_insert_c(HashMap* this, const char key, void* value) {
 	const uint64_t hash = vhash_c(key);
 
 	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
-		const int attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
 		if (this->data[attempt] == NULL) {
 			// free space
 			this->data[attempt] = value;
@@ -158,7 +158,7 @@ bool vhash_map_insert_str(HashMap* this, const char* key, void* value) {
 	const uint64_t hash = vhash_str(key);
 
 	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
-		const int attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
 		if (this->data[attempt] == NULL) {
 			// free space
 			this->data[attempt] = value;
@@ -179,7 +179,7 @@ bool vhash_map_insert_ptr(HashMap* this, const void* key, void* value) {
 	const uint64_t hash = vhash_ptr(key);
 
 	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
-		const int attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
 		if (this->data[attempt] == NULL) {
 			// free space
 			this->data[attempt] = value;
@@ -215,11 +215,15 @@ void* vhash_map_erase_i(HashMap* this, const int key) {
 	}
 
 	const uint64_t hash = vhash_i(key);
-	if (this->data[hash] != NULL) {
-		void* data = this->data[hash];
-		this->data[hash] = NULL;
-		this->size--;
-		return data;
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[attempt] != NULL) {
+			void* data = this->data[attempt];
+			this->data[attempt] = NULL;
+			this->size--;
+			return data;
+		}
 	}
 
 	return NULL;
@@ -231,11 +235,15 @@ void* vhash_map_erase_f(HashMap* this, const float key) {
 	}
 
 	const uint64_t hash = vhash_f(key);
-	if (this->data[hash] != NULL) {
-		void* data = this->data[hash];
-		this->data[hash] = NULL;
-		this->size--;
-		return data;
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[attempt] != NULL) {
+			void* data = this->data[attempt];
+			this->data[attempt] = NULL;
+			this->size--;
+			return data;
+		}
 	}
 
 	return NULL;
@@ -247,11 +255,15 @@ void* vhash_map_erase_c(HashMap* this, const char key) {
 	}
 
 	const uint64_t hash = vhash_c(key);
-	if (this->data[hash] != NULL) {
-		void* data = this->data[hash];
-		this->data[hash] = NULL;
-		this->size--;
-		return data;
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[attempt] != NULL) {
+			void* data = this->data[attempt];
+			this->data[attempt] = NULL;
+			this->size--;
+			return data;
+		}
 	}
 
 	return NULL;
@@ -263,11 +275,15 @@ void* vhash_map_erase_str(HashMap* this, const char* key) {
 	}
 
 	const uint64_t hash = vhash_str(key);
-	if (this->data[hash] != NULL) {
-		void* data = this->data[hash];
-		this->data[hash] = NULL;
-		this->size--;
-		return data;
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[attempt] != NULL) {
+			void* data = this->data[attempt];
+			this->data[attempt] = NULL;
+			this->size--;
+			return data;
+		}
 	}
 
 	return NULL;
@@ -279,11 +295,15 @@ void* vhash_map_erase_ptr(HashMap* this, const void* key) {
 	}
 
 	const uint64_t hash = vhash_ptr(key);
-	if (this->data[hash] != NULL) {
-		void* data = this->data[hash];
-		this->data[hash] = NULL;
-		this->size--;
-		return data;
+
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[attempt] != NULL) {
+			void* data = this->data[attempt];
+			this->data[attempt] = NULL;
+			this->size--;
+			return data;
+		}
 	}
 
 	return NULL;
@@ -312,8 +332,12 @@ void* vhash_map_find_i(const HashMap* this, const int key) {
 	}
 
 	const uint64_t hash = vhash_i(key);
-	if (this->data[hash] != NULL) {
-		return this->data[hash];
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[hash] != NULL) {
+			return this->data[hash];
+		}
 	}
 
 	return NULL;
@@ -325,8 +349,12 @@ void* vhash_map_find_f(const HashMap* this, const float key) {
 	}
 
 	const uint64_t hash = vhash_f(key);
-	if (this->data[hash] != NULL) {
-		return this->data[hash];
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[hash] != NULL) {
+			return this->data[hash];
+		}
 	}
 
 	return NULL;
@@ -338,8 +366,12 @@ void* vhash_map_find_c(const HashMap* this, const char key) {
 	}
 
 	const uint64_t hash = vhash_c(key);
-	if (this->data[hash] != NULL) {
-		return this->data[hash];
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[hash] != NULL) {
+			return this->data[hash];
+		}
 	}
 
 	return NULL;
@@ -351,8 +383,12 @@ void* vhash_map_find_str(const HashMap* this, const char* key) {
 	}
 
 	const uint64_t hash = vhash_str(key);
-	if (this->data[hash] != NULL) {
-		return this->data[hash];
+	
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[hash] != NULL) {
+			return this->data[hash];
+		}
 	}
 
 	return NULL;
@@ -364,8 +400,12 @@ void* vhash_map_find_ptr(const HashMap* this, const void* key) {
 	}
 
 	const uint64_t hash = vhash_ptr(key);
-	if (this->data[hash] != NULL) {
-		return this->data[hash];
+
+	for (int i = 0; i < VHASH_MAP_CAPACITY; i++) {
+		const uint64_t attempt = (i + hash) % VHASH_MAP_CAPACITY;
+		if (this->data[hash] != NULL) {
+			return this->data[hash];
+		}
 	}
 
 	return NULL;
